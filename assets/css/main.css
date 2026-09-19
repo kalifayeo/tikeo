@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --tikeo-orange: 255 122 0;
+  --tikeo-orange-dark: 214 102 0; /* même teinte que --tikeo-orange, luminosité réduite */
+  --tikeo-blue: 0 87 184;
+  --tikeo-blue-dark: 18 59 102;
+  --tikeo-surface: 255 255 255;
+  --tikeo-surface-alt: 245 247 250;
+  --tikeo-border: 237 239 243;
+  --tikeo-text-primary: 17 24 39;
+  --tikeo-text-secondary: 75 85 99;
+  /* Courbe unique pour toutes les animations du site : démarre vite, finit
+     en douceur (proche d'un "ease-out-expo") — un mouvement net et affirmé
+     plutôt qu'un fondu mou, réutilisé partout pour une sensation cohérente. */
+  --ease-tikeo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark {
+  --tikeo-orange: 255 138 26;
+  --tikeo-blue: 84 154 234;
+  --tikeo-blue-dark: 173 209 250;
+  --tikeo-surface: 26 28 34;
+  --tikeo-surface-alt: 15 17 21;
+  --tikeo-border: 46 49 58;
+  --tikeo-text-primary: 243 244 246;
+  --tikeo-text-secondary: 156 163 175;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+  /* overflow-x: clip (et non "hidden") : "hidden" force overflow-y à
+     passer en "auto" côté navigateur dès que overflow-x n'est plus
+     "visible", ce qui casse position:sticky (header qui ne se
+     réaffiche plus après un scroll, notamment sous Safari). */
+  overflow-x: clip;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-tikeo-gray-light text-tikeo-black antialiased transition-colors duration-200;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  overflow-x: clip;
+  max-width: 100vw;
+}
+
+/* Barre de défilement discrète pour les carrousels horizontaux */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Transition douce entre les pages (voir nuxt.config.ts > app.pageTransition).
+   mode "out-in" : la page sortante disparaît avant que la nouvelle apparaisse,
+   pour éviter tout chevauchement/scroll bizarre pendant la transition. */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.32s var(--ease-tikeo), transform 0.32s var(--ease-tikeo);
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+/* Mobile : pas de halo bleu disgracieux au tap, et un léger retour visuel
+   (scale) sur les éléments interactifs pour un ressenti plus "app native". */
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: none) {
+  a:active,
+  button:active {
+    transform: scale(0.97);
+  }
+}
+
+/* Respecte les personnes qui désactivent les animations dans leur OS */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus clavier visible (accessibilité) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--tikeo-orange);
+  outline-offset: 2px;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-none bg-tikeo-orange px-5 py-2.5 text-sm font-semibold text-white shadow-card hover:bg-tikeo-orange-dark active:translate-y-0;
+    transition: transform 0.2s var(--ease-tikeo), box-shadow 0.2s var(--ease-tikeo), background-color 0.15s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -8px rgb(0 0 0 / 0.25);
+  }
+  .btn-primary:active {
+    transform: scale(0.95);
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-tikeo-blue px-5 py-2.5 text-sm font-semibold text-tikeo-blue hover:bg-tikeo-blue hover:text-white active:translate-y-0;
+    transition: transform 0.2s var(--ease-tikeo), box-shadow 0.2s var(--ease-tikeo), background-color 0.15s ease, color 0.15s ease;
+  }
+  .btn-secondary:hover {
+    transform: translateY(-3px);
+  }
+  .btn-secondary:active {
+    transform: scale(0.95);
+  }
+  .card {
+    @apply rounded-card bg-tikeo-surface shadow-card;
+    transition: transform 0.3s var(--ease-tikeo), box-shadow 0.3s var(--ease-tikeo);
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 32px -12px rgb(0 0 0 / 0.25);
+  }
+  .input-field {
+    @apply w-full rounded-none border border-tikeo-border bg-tikeo-surface px-4 py-2.5 text-sm text-tikeo-black placeholder:text-gray-400 focus:border-tikeo-orange focus:outline-none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .input-field:focus {
+    box-shadow: 0 0 0 3px rgb(var(--tikeo-orange) / 0.15);
+  }
+
+  /* Lignes du menu mobile (compte + navigation) : badge d'icône, texte
+     clair, chevron discret — pour un rendu "app pro" plutôt qu'une liste
+     de liens brute. Voir components/AppHeader.vue. */
+  .mobile-menu-row {
+    @apply flex items-center gap-3 px-4 py-3.5 text-[15px] font-medium text-tikeo-black transition-colors duration-150 active:bg-tikeo-surface-alt;
+  }
+  .mobile-menu-icon {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tikeo-surface-alt text-tikeo-gray-text;
+  }
+  .mobile-menu-chevron {
+    @apply h-4 w-4 shrink-0 text-tikeo-border;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-position: center;
+    background-color: currentColor;
+  }
+}
