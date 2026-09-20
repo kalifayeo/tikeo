@@ -109,7 +109,13 @@
     "newPasswordPlaceholder": "Nueva contraseña (mín. 8 caracteres)",
     "resetting": "Actualizando...",
     "resetError": "No se pudo restablecer la contraseña.",
-    "backToLogin": "Volver a iniciar sesión"
+    "backToLogin": "Volver a iniciar sesión",
+    "termsConsentPrefix": "Acepto las",
+    "termsConsentTerms": "condiciones de uso",
+    "termsConsentAnd": "y la",
+    "termsConsentPrivacy": "política de privacidad",
+    "mustAcceptTerms": "Debes aceptar las condiciones de uso para crear una cuenta.",
+    "captchaRequired": "Completa la verificación anti-robot antes de continuar."
   },
   "topbar": {
     "contact": "Ayuda y contacto"
@@ -133,7 +139,8 @@
     "legal": "Aviso legal",
     "privacy": "Política de privacidad",
     "terms": "Condiciones generales de venta",
-    "backToTop": "Volver arriba"
+    "backToTop": "Volver arriba",
+    "cookies": "Gestionar cookies"
   },
   "search": {
     "searching": "Buscando…",
@@ -187,7 +194,20 @@
     "seatingPlan": "Ver el plano de la sala",
     "seatingPlanExternal": "Este plano de sala es un documento externo.",
     "seatingPlanOpen": "Abrir documento",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "orderErrors": {
+      "SOLD_OUT": "No quedan suficientes entradas en esta categoría.",
+      "TICKET_NOT_AVAILABLE": "Este tipo de entrada ya no está disponible.",
+      "SALE_NOT_OPEN": "La venta de esta entrada aún no ha comenzado.",
+      "SALE_CLOSED": "La venta de esta entrada ha terminado.",
+      "EVENT_NOT_AVAILABLE": "Este evento ya no está a la venta.",
+      "INVALID_QUANTITY": "Cantidad no válida (máximo 10 entradas por tipo).",
+      "EMPTY_ORDER": "Selecciona al menos una entrada.",
+      "TOO_MANY_PENDING": "Ya tienes varios pedidos pendientes. Finalízalos o espera unos minutos.",
+      "ACCOUNT_SUSPENDED": "Tu cuenta está suspendida. Contacta con el soporte.",
+      "SESSION_EXPIRED": "Tu sesión ha caducado. Vuelve a iniciar sesión.",
+      "RATE_LIMITED": "Demasiados intentos. Inténtalo de nuevo en unos minutos."
+    }
   },
   "common": {
     "comingSoon": "Esta sección está prevista en la hoja de ruta de Tikeo y se desarrollará en una etapa posterior.",
@@ -875,9 +895,9 @@
     "s4Title": "4. Conservación de datos",
     "s4Text": "Tus datos se conservan durante el tiempo necesario para gestionar tu cuenta y tus pedidos, y luego se archivan o eliminan de acuerdo con las obligaciones legales aplicables.",
     "s5Title": "5. Tus derechos",
-    "s5Text": "Tienes derecho a acceder, rectificar y eliminar tus datos personales. Puedes ejercer estos derechos en cualquier momento desde tu espacio «Configuración» o contactándonos.",
+    "s5Text": "De conformidad con la ley marfileña n.º 2013-450 de 19 de junio de 2013 sobre protección de datos personales, tienes derecho a acceder, rectificar y suprimir tus datos. Puedes ejercer estos derechos en cualquier momento desde tu área «Ajustes» o contactándonos, y acudir a la ARTCI (autoridad reguladora de telecomunicaciones/TIC de Costa de Marfil) en caso de litigio.",
     "s6Title": "6. Cookies",
-    "s6Text": "Tikeo utiliza cookies necesarias para el funcionamiento del sitio (inicio de sesión, preferencias de idioma) y, con tu consentimiento, cookies de medición de audiencia.",
+    "s6Text": "Tikeo utiliza cookies necesarias para el funcionamiento del sitio (inicio de sesión, preferencias de idioma) y, con tu consentimiento, una medición de audiencia anónima. Puedes cambiar tu elección en cualquier momento mediante «Gestionar cookies».",
     "s7Title": "7. Seguridad",
     "s7Text": "Los pagos y las verificaciones de entradas se procesan en el servidor, nunca en el navegador, para garantizar la seguridad de tus datos y transacciones.",
     "s8Title": "8. Contacto",
@@ -995,5 +1015,74 @@
     "reply": "Responder por email",
     "archive": "Archivar",
     "unarchive": "Desarchivar"
+  },
+  "cookies": {
+    "title": "Cookies y privacidad",
+    "text": "Tikeo utiliza cookies necesarias para el funcionamiento del sitio. Con tu consentimiento, también usamos una medición de audiencia anónima para mejorar la plataforma.",
+    "accept": "Aceptar",
+    "refuse": "Rechazar",
+    "learnMore": "Más información",
+    "manage": "Gestionar cookies"
+  },
+  "notFoundPage": {
+    "code404": "404",
+    "title404": "Página no encontrada",
+    "text404": "La página que buscas no existe o ha sido movida.",
+    "titleError": "Ha ocurrido un error",
+    "textError": "Ha ocurrido un problema por nuestra parte. Inténtalo de nuevo en un momento.",
+    "home": "Volver al inicio",
+    "events": "Ver los eventos"
+  },
+  "seo": {
+    "defaultTitle": "Tikeo - La venta de entradas simple e inteligente para tus eventos",
+    "defaultDescription": "Tikeo es la plataforma de venta de entradas en línea para descubrir, comprar y gestionar tus entradas en Costa de Marfil y en África.",
+    "pages": {
+      "login": "Iniciar sesión",
+      "register": "Registrarse",
+      "forgotPassword": "Contraseña olvidada",
+      "terms": "Condiciones de uso",
+      "privacy": "Política de privacidad",
+      "contact": "Contáctanos",
+      "faq": "Preguntas frecuentes",
+      "about": "Quiénes somos",
+      "pricing": "Tarifas para organizadores",
+      "organizerLanding": "Hazte organizador",
+      "account": "Mi espacio",
+      "myTickets": "Mis entradas",
+      "myOrders": "Mis pedidos",
+      "favorites": "Mis favoritos",
+      "notifications": "Notificaciones",
+      "profile": "Mi perfil",
+      "settings": "Ajustes",
+      "wallet": "Mi monedero",
+      "organizerDashboard": "Panel del organizador",
+      "organizerEvents": "Mis eventos",
+      "organizerNew": "Crear un evento",
+      "organizerEdit": "Editar el evento",
+      "organizerScanner": "Escáner de entrada",
+      "organizerSettings": "Ajustes del organizador",
+      "organizerRevenue": "Ingresos",
+      "admin": "Administración",
+      "adminUsers": "Usuarios",
+      "adminOrganizers": "Organizadores",
+      "adminEvents": "Eventos",
+      "adminRequests": "Solicitudes de modificación",
+      "adminTickets": "Entradas",
+      "adminOrders": "Pedidos",
+      "adminPayments": "Pagos",
+      "adminCategories": "Categorías",
+      "adminHome": "Banner de inicio",
+      "adminMessages": "Mensajes de contacto"
+    },
+    "desc": {
+      "login": "Inicia sesión en tu cuenta de Tikeo para encontrar tus entradas y pedidos.",
+      "register": "Crea tu cuenta de Tikeo gratis para comprar entradas u organizar tus eventos.",
+      "terms": "Condiciones de uso de la plataforma de venta de entradas Tikeo.",
+      "privacy": "Cómo Tikeo recopila, utiliza y protege tus datos personales.",
+      "contact": "¿Tienes una pregunta? Contacta con el equipo de Tikeo, respondemos rápido.",
+      "faq": "Respuestas a las preguntas frecuentes sobre entradas, pagos y eventos en Tikeo.",
+      "about": "Descubre Tikeo, la plataforma moderna de venta de entradas pensada para Costa de Marfil y África.",
+      "pricing": "Descubre los planes de Tikeo para vender tus entradas en línea y controlar los accesos."
+    }
   }
 }

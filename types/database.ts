@@ -97,6 +97,8 @@ export interface Order {
   total: number
   currency: string
   status: OrderStatus
+  /** Fin de la réservation de stock d'une commande « pending » (migration 0017). */
+  expires_at?: string | null
   created_at: string
   updated_at: string
 }
@@ -353,6 +355,23 @@ export interface Database {
       contact_messages: { Row: ContactMessage; Insert: Partial<ContactMessage>; Update: Partial<ContactMessage> }
       home_slides: { Row: HomeSlide; Insert: Partial<HomeSlide>; Update: Partial<HomeSlide> }
       home_hero_content: { Row: HomeHeroContent; Insert: Partial<HomeHeroContent>; Update: Partial<HomeHeroContent> }
+    }
+    // Fonctions SQL appelées uniquement depuis les routes serveur (service_role).
+    Functions: {
+      create_order: {
+        Args: { p_user_id: string; p_event_id: string; p_items: Array<{ ticket_type_id: string; quantity: number }> }
+        Returns: {
+          id: string
+          order_number: string
+          subtotal: number
+          fees: number
+          total: number
+          currency: string
+          status: OrderStatus
+          expires_at: string
+        }
+      }
+      release_expired_orders: { Args: Record<string, never>; Returns: number }
     }
   }
 }

@@ -49,6 +49,8 @@ const initials = computed(() => {
         <img
           :src="event.coverImage"
           :alt="event.title"
+          loading="lazy"
+          decoding="async"
           class="w-full object-cover transition group-hover:scale-105"
           :class="variant === 'full' ? 'h-28' : 'h-40'"
         />

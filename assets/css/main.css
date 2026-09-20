@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+/* Polices : chargées via <link> dans nuxt.config.ts (plus d'@import bloquant). */
 
 @tailwind base;
 @tailwind components;
@@ -7,6 +7,13 @@
 :root {
   --tikeo-orange: 255 122 0;
   --tikeo-orange-dark: 214 102 0; /* même teinte que --tikeo-orange, luminosité réduite */
+  /* Contraste WCAG AA : #FF7A00 sur blanc ne fait que 2,6:1 (minimum 4,5:1).
+     « strong » = MÊME teinte, plus foncée (5,1:1 avec du texte blanc) : utilisée
+     pour les boutons orange et le texte orange sur fond clair. L'orange de
+     marque #FF7A00 reste utilisé pour les aplats décoratifs, dégradés, bordures. */
+  --tikeo-orange-strong: 176 84 0;
+  --tikeo-orange-strong-hover: 146 68 0;
+  --tikeo-on-orange: 255 255 255; /* couleur du texte posé sur un fond orange */
   --tikeo-blue: 0 87 184;
   --tikeo-blue-dark: 18 59 102;
   --tikeo-surface: 255 255 255;
@@ -22,6 +29,11 @@
 
 .dark {
   --tikeo-orange: 255 138 26;
+  /* Thème sombre : l'orange clair se lit bien sur fond sombre, mais le texte
+     posé DESSUS doit être sombre (blanc sur #FF8A1A = 2,3:1). */
+  --tikeo-orange-strong: 255 138 26;
+  --tikeo-orange-strong-hover: 255 158 66;
+  --tikeo-on-orange: 17 24 39;
   --tikeo-blue: 84 154 234;
   --tikeo-blue-dark: 173 209 250;
   --tikeo-surface: 26 28 34;
@@ -103,16 +115,19 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--tikeo-orange);
+  outline: 2px solid rgb(var(--tikeo-orange-strong));
   outline-offset: 2px;
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-none bg-tikeo-orange px-5 py-2.5 text-sm font-semibold text-white shadow-card hover:bg-tikeo-orange-dark active:translate-y-0;
+    @apply inline-flex items-center justify-center gap-2 rounded-none px-5 py-2.5 text-sm font-semibold shadow-card active:translate-y-0;
+    background-color: rgb(var(--tikeo-orange-strong));
+    color: rgb(var(--tikeo-on-orange));
     transition: transform 0.2s var(--ease-tikeo), box-shadow 0.2s var(--ease-tikeo), background-color 0.15s ease;
   }
   .btn-primary:hover {
+    background-color: rgb(var(--tikeo-orange-strong-hover));
     transform: translateY(-3px);
     box-shadow: 0 12px 24px -8px rgb(0 0 0 / 0.25);
   }
@@ -161,4 +176,29 @@ select:focus-visible {
     mask-position: center;
     background-color: currentColor;
   }
+}
+
+/* ------------------------------------------------------------------
+   Contraste (WCAG AA) — thème clair
+   ------------------------------------------------------------------
+   Les classes Tikeo (bg-tikeo-orange, text-tikeo-orange…) sont utilisées
+   partout ; plutôt que d'éditer chaque page, on les fait pointer vers la
+   variante « strong » (même teinte, plus foncée) tant que le fond est
+   clair. Les variantes avec opacité (bg-tikeo-orange/10…) ne sont pas
+   concernées : elles servent de teinte de fond, pas de texte. */
+:root:not(.dark) .bg-tikeo-orange {
+  background-color: rgb(var(--tikeo-orange-strong));
+}
+:root:not(.dark) .hover\:bg-tikeo-orange-dark:hover {
+  background-color: rgb(var(--tikeo-orange-strong-hover));
+}
+:root:not(.dark) .text-tikeo-orange,
+:root:not(.dark) .\!text-tikeo-orange,
+:root:not(.dark) .hover\:text-tikeo-orange:hover,
+:root:not(.dark) .group:hover .group-hover\:text-tikeo-orange {
+  color: rgb(var(--tikeo-orange-strong));
+}
+/* Thème sombre : texte sombre sur les aplats orange clairs. */
+.dark .bg-tikeo-orange.text-white {
+  color: rgb(var(--tikeo-on-orange));
 }

@@ -109,7 +109,13 @@
     "newPasswordPlaceholder": "Nouveau mot de passe (min. 8 caractères)",
     "resetting": "Mise à jour...",
     "resetError": "Impossible de réinitialiser le mot de passe.",
-    "backToLogin": "Retour à la connexion"
+    "backToLogin": "Retour à la connexion",
+    "termsConsentPrefix": "J'accepte les",
+    "termsConsentTerms": "conditions d'utilisation",
+    "termsConsentAnd": "et la",
+    "termsConsentPrivacy": "politique de confidentialité",
+    "mustAcceptTerms": "Vous devez accepter les conditions d'utilisation pour créer un compte.",
+    "captchaRequired": "Veuillez valider la vérification anti-robot avant de continuer."
   },
   "topbar": {
     "contact": "Aide & Contact"
@@ -133,7 +139,8 @@
     "legal": "Mentions légales",
     "privacy": "Politique de confidentialité",
     "terms": "Conditions générales de vente",
-    "backToTop": "Retour en haut"
+    "backToTop": "Retour en haut",
+    "cookies": "Gérer les cookies"
   },
   "search": {
     "searching": "Recherche en cours…",
@@ -187,7 +194,20 @@
     "seatingPlan": "Voir le plan de salle",
     "seatingPlanExternal": "Ce plan de salle est un document externe.",
     "seatingPlanOpen": "Ouvrir le document",
-    "close": "Fermer"
+    "close": "Fermer",
+    "orderErrors": {
+      "SOLD_OUT": "Il n'y a plus assez de billets disponibles pour cette catégorie.",
+      "TICKET_NOT_AVAILABLE": "Ce type de billet n'est plus disponible.",
+      "SALE_NOT_OPEN": "La vente de ce billet n'a pas encore commencé.",
+      "SALE_CLOSED": "La vente de ce billet est terminée.",
+      "EVENT_NOT_AVAILABLE": "Cet événement n'est plus disponible à la vente.",
+      "INVALID_QUANTITY": "Quantité invalide (10 billets maximum par type).",
+      "EMPTY_ORDER": "Sélectionnez au moins un billet.",
+      "TOO_MANY_PENDING": "Vous avez déjà plusieurs commandes en attente. Finalisez-les ou patientez quelques minutes.",
+      "ACCOUNT_SUSPENDED": "Votre compte est suspendu. Contactez le support.",
+      "SESSION_EXPIRED": "Votre session a expiré. Veuillez vous reconnecter.",
+      "RATE_LIMITED": "Trop de tentatives. Réessayez dans quelques minutes."
+    }
   },
   "common": {
     "comingSoon": "Cette section est prévue dans le cahier des charges Tikeo et sera développée à l'étape suivante.",
@@ -875,9 +895,9 @@
     "s4Title": "4. Conservation des données",
     "s4Text": "Vos données sont conservées pendant la durée nécessaire à la gestion de votre compte et de vos commandes, puis archivées ou supprimées conformément aux obligations légales applicables.",
     "s5Title": "5. Vos droits",
-    "s5Text": "Vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Vous pouvez exercer ces droits à tout moment depuis votre espace « Paramètres » ou en nous contactant.",
+    "s5Text": "Conformément à la loi ivoirienne n° 2013-450 du 19 juin 2013 relative à la protection des données à caractère personnel, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Vous pouvez exercer ces droits à tout moment depuis votre espace « Paramètres » ou en nous contactant, et saisir l'ARTCI (Autorité de régulation des télécommunications/TIC de Côte d'Ivoire) en cas de litige.",
     "s6Title": "6. Cookies",
-    "s6Text": "Tikeo utilise des cookies nécessaires au fonctionnement du site (connexion, préférences de langue) et, avec votre consentement, des cookies de mesure d'audience.",
+    "s6Text": "Tikeo utilise des cookies nécessaires au fonctionnement du site (connexion, préférences de langue) et, avec votre consentement, une mesure d'audience anonyme. Vous pouvez modifier votre choix à tout moment via « Gérer les cookies ».",
     "s7Title": "7. Sécurité",
     "s7Text": "Les paiements et les vérifications de billets sont traités côté serveur, jamais dans le navigateur, afin de garantir la sécurité de vos données et de vos transactions.",
     "s8Title": "8. Contact",
@@ -995,5 +1015,74 @@
     "reply": "Répondre par email",
     "archive": "Archiver",
     "unarchive": "Désarchiver"
+  },
+  "cookies": {
+    "title": "Cookies et confidentialité",
+    "text": "Tikeo utilise des cookies nécessaires au fonctionnement du site. Avec votre accord, nous utilisons aussi une mesure d'audience anonyme pour améliorer la plateforme.",
+    "accept": "Accepter",
+    "refuse": "Refuser",
+    "learnMore": "En savoir plus",
+    "manage": "Gérer les cookies"
+  },
+  "notFoundPage": {
+    "code404": "404",
+    "title404": "Page introuvable",
+    "text404": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "titleError": "Une erreur est survenue",
+    "textError": "Un problème est survenu de notre côté. Réessayez dans un instant.",
+    "home": "Retour à l'accueil",
+    "events": "Voir les événements"
+  },
+  "seo": {
+    "defaultTitle": "Tikeo - La billetterie simple et intelligente pour vos événements",
+    "defaultDescription": "Tikeo est la plateforme de billetterie en ligne pour découvrir, acheter et gérer vos billets d'événements en Côte d'Ivoire et en Afrique.",
+    "pages": {
+      "login": "Connexion",
+      "register": "Inscription",
+      "forgotPassword": "Mot de passe oublié",
+      "terms": "Conditions générales d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "contact": "Contactez-nous",
+      "faq": "Foire aux questions",
+      "about": "Qui sommes-nous ?",
+      "pricing": "Tarifs pour organisateurs",
+      "organizerLanding": "Devenez organisateur",
+      "account": "Mon espace",
+      "myTickets": "Mes billets",
+      "myOrders": "Mes commandes",
+      "favorites": "Mes favoris",
+      "notifications": "Notifications",
+      "profile": "Mon profil",
+      "settings": "Paramètres",
+      "wallet": "Mon portefeuille",
+      "organizerDashboard": "Tableau de bord organisateur",
+      "organizerEvents": "Mes événements",
+      "organizerNew": "Créer un événement",
+      "organizerEdit": "Modifier l'événement",
+      "organizerScanner": "Scanner d'entrée",
+      "organizerSettings": "Paramètres organisateur",
+      "organizerRevenue": "Revenus",
+      "admin": "Administration",
+      "adminUsers": "Utilisateurs",
+      "adminOrganizers": "Organisateurs",
+      "adminEvents": "Événements",
+      "adminRequests": "Demandes de modification",
+      "adminTickets": "Billets",
+      "adminOrders": "Commandes",
+      "adminPayments": "Paiements",
+      "adminCategories": "Catégories",
+      "adminHome": "Bannière d'accueil",
+      "adminMessages": "Messages de contact"
+    },
+    "desc": {
+      "login": "Connectez-vous à votre compte Tikeo pour retrouver vos billets et vos commandes.",
+      "register": "Créez votre compte Tikeo gratuitement pour acheter des billets ou organiser vos événements.",
+      "terms": "Conditions générales d'utilisation de la plateforme de billetterie Tikeo.",
+      "privacy": "Comment Tikeo collecte, utilise et protège vos données personnelles.",
+      "contact": "Une question ? Contactez l'équipe Tikeo, nous vous répondons rapidement.",
+      "faq": "Réponses aux questions fréquentes sur les billets, les paiements et les événements sur Tikeo.",
+      "about": "Découvrez Tikeo, la billetterie moderne pensée pour la Côte d'Ivoire et l'Afrique.",
+      "pricing": "Découvrez les formules de Tikeo pour vendre vos billets en ligne et contrôler les entrées."
+    }
   }
 }

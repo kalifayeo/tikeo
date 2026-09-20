@@ -109,7 +109,13 @@
     "newPasswordPlaceholder": "Nova senha (mín. 8 caracteres)",
     "resetting": "Atualizando...",
     "resetError": "Não foi possível redefinir a senha.",
-    "backToLogin": "Voltar para entrar"
+    "backToLogin": "Voltar para entrar",
+    "termsConsentPrefix": "Aceito os",
+    "termsConsentTerms": "termos de utilização",
+    "termsConsentAnd": "e a",
+    "termsConsentPrivacy": "política de privacidade",
+    "mustAcceptTerms": "Deve aceitar os termos de utilização para criar uma conta.",
+    "captchaRequired": "Conclua a verificação anti-robô antes de continuar."
   },
   "topbar": {
     "contact": "Ajuda e contacto"
@@ -133,7 +139,8 @@
     "legal": "Avisos legais",
     "privacy": "Política de privacidade",
     "terms": "Termos de venda",
-    "backToTop": "Voltar ao topo"
+    "backToTop": "Voltar ao topo",
+    "cookies": "Gerir cookies"
   },
   "search": {
     "searching": "Pesquisando…",
@@ -187,7 +194,20 @@
     "seatingPlan": "Ver o mapa do local",
     "seatingPlanExternal": "Este mapa do local é um documento externo.",
     "seatingPlanOpen": "Abrir documento",
-    "close": "Fechar"
+    "close": "Fechar",
+    "orderErrors": {
+      "SOLD_OUT": "Já não há bilhetes suficientes nesta categoria.",
+      "TICKET_NOT_AVAILABLE": "Este tipo de bilhete já não está disponível.",
+      "SALE_NOT_OPEN": "A venda deste bilhete ainda não começou.",
+      "SALE_CLOSED": "A venda deste bilhete terminou.",
+      "EVENT_NOT_AVAILABLE": "Este evento já não está à venda.",
+      "INVALID_QUANTITY": "Quantidade inválida (máximo de 10 bilhetes por tipo).",
+      "EMPTY_ORDER": "Selecione pelo menos um bilhete.",
+      "TOO_MANY_PENDING": "Já tem várias encomendas pendentes. Conclua-as ou aguarde alguns minutos.",
+      "ACCOUNT_SUSPENDED": "A sua conta está suspensa. Contacte o suporte.",
+      "SESSION_EXPIRED": "A sua sessão expirou. Volte a iniciar sessão.",
+      "RATE_LIMITED": "Demasiadas tentativas. Tente novamente dentro de alguns minutos."
+    }
   },
   "common": {
     "comingSoon": "Esta seção está prevista no roteiro do Tikeo e será desenvolvida em uma etapa posterior.",
@@ -875,9 +895,9 @@
     "s4Title": "4. Conservação dos dados",
     "s4Text": "Os seus dados são conservados durante o tempo necessário à gestão da sua conta e das suas encomendas, sendo depois arquivados ou eliminados de acordo com as obrigações legais aplicáveis.",
     "s5Title": "5. Os seus direitos",
-    "s5Text": "Tem direito a aceder, retificar e eliminar os seus dados pessoais. Pode exercer estes direitos a qualquer momento a partir do seu espaço «Definições» ou contactando-nos.",
+    "s5Text": "Nos termos da lei marfinense n.º 2013-450, de 19 de junho de 2013, relativa à proteção de dados pessoais, tem direito de acesso, retificação e eliminação dos seus dados. Pode exercer estes direitos a qualquer momento a partir da sua área «Definições» ou contactando-nos, e recorrer à ARTCI (autoridade reguladora das telecomunicações/TIC da Costa do Marfim) em caso de litígio.",
     "s6Title": "6. Cookies",
-    "s6Text": "A Tikeo utiliza cookies necessários ao funcionamento do site (sessão, preferências de idioma) e, com o seu consentimento, cookies de medição de audiência.",
+    "s6Text": "A Tikeo utiliza cookies necessários ao funcionamento do site (sessão, preferências de idioma) e, com o seu consentimento, uma medição de audiência anónima. Pode alterar a sua escolha a qualquer momento através de «Gerir cookies».",
     "s7Title": "7. Segurança",
     "s7Text": "Os pagamentos e as verificações de bilhetes são processados do lado do servidor, nunca no navegador, para garantir a segurança dos seus dados e transações.",
     "s8Title": "8. Contacto",
@@ -995,5 +1015,74 @@
     "reply": "Responder por email",
     "archive": "Arquivar",
     "unarchive": "Desarquivar"
+  },
+  "cookies": {
+    "title": "Cookies e privacidade",
+    "text": "A Tikeo utiliza cookies necessários ao funcionamento do site. Com o seu consentimento, utilizamos também uma medição de audiência anónima para melhorar a plataforma.",
+    "accept": "Aceitar",
+    "refuse": "Recusar",
+    "learnMore": "Saber mais",
+    "manage": "Gerir cookies"
+  },
+  "notFoundPage": {
+    "code404": "404",
+    "title404": "Página não encontrada",
+    "text404": "A página que procura não existe ou foi movida.",
+    "titleError": "Ocorreu um erro",
+    "textError": "Ocorreu um problema do nosso lado. Tente novamente dentro de instantes.",
+    "home": "Voltar ao início",
+    "events": "Ver os eventos"
+  },
+  "seo": {
+    "defaultTitle": "Tikeo - A bilheteira simples e inteligente para os seus eventos",
+    "defaultDescription": "A Tikeo é a plataforma de bilheteira online para descobrir, comprar e gerir os seus bilhetes na Costa do Marfim e em África.",
+    "pages": {
+      "login": "Entrar",
+      "register": "Registo",
+      "forgotPassword": "Palavra-passe esquecida",
+      "terms": "Termos de utilização",
+      "privacy": "Política de privacidade",
+      "contact": "Contacte-nos",
+      "faq": "Perguntas frequentes",
+      "about": "Quem somos",
+      "pricing": "Preços para organizadores",
+      "organizerLanding": "Torne-se organizador",
+      "account": "O meu espaço",
+      "myTickets": "Os meus bilhetes",
+      "myOrders": "As minhas encomendas",
+      "favorites": "Os meus favoritos",
+      "notifications": "Notificações",
+      "profile": "O meu perfil",
+      "settings": "Definições",
+      "wallet": "A minha carteira",
+      "organizerDashboard": "Painel do organizador",
+      "organizerEvents": "Os meus eventos",
+      "organizerNew": "Criar um evento",
+      "organizerEdit": "Editar o evento",
+      "organizerScanner": "Leitor de entrada",
+      "organizerSettings": "Definições do organizador",
+      "organizerRevenue": "Receitas",
+      "admin": "Administração",
+      "adminUsers": "Utilizadores",
+      "adminOrganizers": "Organizadores",
+      "adminEvents": "Eventos",
+      "adminRequests": "Pedidos de alteração",
+      "adminTickets": "Bilhetes",
+      "adminOrders": "Encomendas",
+      "adminPayments": "Pagamentos",
+      "adminCategories": "Categorias",
+      "adminHome": "Banner inicial",
+      "adminMessages": "Mensagens de contacto"
+    },
+    "desc": {
+      "login": "Entre na sua conta Tikeo para encontrar os seus bilhetes e encomendas.",
+      "register": "Crie a sua conta Tikeo gratuitamente para comprar bilhetes ou organizar os seus eventos.",
+      "terms": "Termos de utilização da plataforma de bilheteira Tikeo.",
+      "privacy": "Como a Tikeo recolhe, utiliza e protege os seus dados pessoais.",
+      "contact": "Tem uma dúvida? Contacte a equipa Tikeo, respondemos rapidamente.",
+      "faq": "Respostas às perguntas frequentes sobre bilhetes, pagamentos e eventos na Tikeo.",
+      "about": "Descubra a Tikeo, a bilheteira moderna pensada para a Costa do Marfim e África.",
+      "pricing": "Descubra os planos da Tikeo para vender os seus bilhetes online e controlar as entradas."
+    }
   }
 }

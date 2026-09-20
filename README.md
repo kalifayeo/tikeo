@@ -26,7 +26,7 @@ connexion Supabase réelle, RLS, i18n, etc. Seule `mon-espace/portefeuille` rest
 
 ### ✅ Fait et fonctionnel
 - Authentification (inscription, connexion, mot de passe oublié) via Supabase Auth.
-- Base de données complète avec RLS (`supabase/migrations/`, 16 migrations).
+- Base de données complète avec RLS (`supabase/migrations/`, 18 migrations).
 - Site public : accueil, liste/recherche d'événements, page événement, catégories,
   organisateurs, FAQ, contact, conditions, confidentialité.
 - Espace acheteur : tableau de bord, commandes, favoris, notifications, profil,
@@ -63,6 +63,16 @@ connexion Supabase réelle, RLS, i18n, etc. Seule `mon-espace/portefeuille` rest
 7. Fonctionnalités V2/V3 (§61-62) : notifications push, codes promo, placement
    numéroté, export, etc. — volontairement hors MVP.
 
+## ✅ Audit pré-lancement (checklist « 20 points »)
+
+Le site a été passé en revue point par point avant le lancement : SEO et aperçus de
+partage (rendu serveur de la page événement, Open Graph, JSON-LD, `robots.txt`,
+`sitemap.xml`), bannière cookies + mesure d'audience conditionnée, page 404, contraste
+WCAG AA, images allégées, en-têtes de sécurité / HTTPS, anti-spam (Turnstile,
+honeypot) et **création de commande côté serveur** (`/api/orders`, migration 0017).
+Le détail, les étapes de déploiement et ce qui reste à faire sont dans
+**`CHANGEMENTS.md`**.
+
 ## 🆕 Dernières retouches (retours sur la maquette)
 
 - Logo agrandi et plus visible dans l'en-tête (desktop et mobile).
@@ -81,9 +91,9 @@ connexion Supabase réelle, RLS, i18n, etc. Seule `mon-espace/portefeuille` rest
 ## 🗂 Connecter Supabase
 
 1. Créez un projet sur [supabase.com](https://supabase.com).
-2. Dans **SQL Editor**, exécutez dans l'ordre :
-   - `supabase/migrations/0001_init.sql`
-   - `supabase/seed/seed.sql`
+2. Dans **SQL Editor**, exécutez dans l'ordre **toutes** les migrations de
+   `supabase/migrations/` (`0001_init.sql` → `0018_media_no_svg.sql`), puis
+   `supabase/seed/seed.sql`.
 3. Copiez l'URL et la clé anonyme dans `.env`.
 4. (Optionnel) Créez un bucket Storage `event-images` pour les affiches d'événements.
 

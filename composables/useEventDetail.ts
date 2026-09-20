@@ -1,14 +1,9 @@
 import type { EventDetailData, TicketTypeOption } from '~/types/database'
 
-const EVENT_DETAIL_SELECT = `id, slug, title, description, city, country, location_name, address,
-  start_date, end_date, cover_image, organizer_id, seating_plan_url,
-  category:categories(name),
-  organizer:organizers(name, logo_url, description, status),
-  ticket_types(id, name, description, price, quantity, sold_quantity, status)`
-
 function mapDetail(e: any): EventDetailData {
   const ticketTypes: TicketTypeOption[] = (e.ticket_types ?? [])
-    .filter((tt: any) => tt.status !== 'archived')
+    // Même règle que create_order() en base : seuls les types « active » sont vendables.
+    .filter((tt: any) => (tt.status ?? 'active') === 'active')
     .map((tt: any) => {
       const remaining = tt.quantity != null ? Math.max(0, Number(tt.quantity) - Number(tt.sold_quantity ?? 0)) : null
       return {
@@ -47,48 +42,44 @@ function mapDetail(e: any): EventDetailData {
 
 /**
  * Événement publié, détail complet pour la page /e/[slug] — billetterie,
- * description, organisateur. Utilisé côté client uniquement (le client
- * Supabase ne vit que dans le navigateur, voir plugins/supabase.client.ts).
+ * description, organisateur.
+ *
+ * Chargé via GET /api/events/:slug (server/api/events/[slug].get.ts) avec
+ * useAsyncData : la page est donc RENDUE CÔTÉ SERVEUR avec ses vraies données
+ * (titre, image Open Graph, JSON-LD…). C'est indispensable pour que Google,
+ * WhatsApp et Facebook affichent le bon aperçu quand on partage
+ * himra.tikeo.com — le client Supabase, lui, n'existe que dans le navigateur.
  */
 export function useEventDetail(slug: string) {
-  const event = ref<EventDetailData | null>(null)
-  const loading = ref(true)
-  const notFound = ref(false)
-  const error = ref<string | null>(null)
+  // Côté serveur, on garde l'objet requête pour répondre un vrai code HTTP 404
+  // quand l'événement n'existe pas (sinon Google indexerait une « soft 404 »).
+  const requestEvent = import.meta.server ? useRequestEvent() : undefined
 
-  async function fetchEvent() {
-    loading.value = true
-    notFound.value = false
-    error.value = null
-    try {
-      const supabase = useSupabase()
-      const { data, error: sbError } = await supabase
-        .from('events')
-        .select(EVENT_DETAIL_SELECT)
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .maybeSingle()
-
-      if (sbError) throw sbError
-      if (!data) {
-        notFound.value = true
-        event.value = null
-        return
+  const { data, pending, error: asyncError, refresh } = useAsyncData<{ row: any | null }>(
+    `event-detail:${slug}`,
+    async () => {
+      try {
+        const row = await $fetch<any>(`/api/events/${encodeURIComponent(slug)}`)
+        return { row }
+      } catch (e: any) {
+        const status = e?.statusCode ?? e?.status ?? e?.response?.status
+        if (status === 404) {
+          if (requestEvent) setResponseStatus(requestEvent, 404)
+          return { row: null }
+        }
+        throw e
       }
-      event.value = mapDetail(data)
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : "Erreur de chargement de l'événement"
-      event.value = null
-    } finally {
-      loading.value = false
     }
-  }
+  )
 
-  if (import.meta.client) {
-    onMounted(fetchEvent)
-  }
+  const event = computed<EventDetailData | null>(() => (data.value?.row ? mapDetail(data.value.row) : null))
+  const loading = computed(() => pending.value && !data.value)
+  const notFound = computed(() => !!data.value && data.value.row === null)
+  const error = computed<string | null>(() =>
+    asyncError.value ? asyncError.value.message || "Erreur de chargement de l'événement" : null
+  )
 
-  return { event, loading, notFound, error, refresh: fetchEvent }
+  return { event, loading, notFound, error, refresh: () => refresh() }
 }
 
 export interface CartLine {
@@ -98,64 +89,68 @@ export interface CartLine {
   quantity: number
 }
 
-function generateOrderNumber() {
-  const rand = Math.random().toString(36).slice(2, 6).toUpperCase()
-  return `TIK-${Date.now().toString(36).toUpperCase()}-${rand}`
+/**
+ * Création de commande (statut `pending`) depuis la page événement.
+ *
+ * La commande n'est PLUS écrite directement depuis le navigateur : on appelle
+ * POST /api/orders, qui vérifie la session, relit les prix et le stock en base
+ * et réserve les billets de façon atomique (cahier des charges §49 et §64).
+ * On n'envoie donc que { eventId, items: [{ ticketTypeId, quantity }] } :
+ * ni prix, ni total, ni statut, ni identifiant utilisateur.
+ *
+ * Le paiement en ligne n'est pas encore branché (§24-26) : la commande reste
+ * `pending` et retient son stock 15 minutes (voir migration 0017).
+ */
+export interface CreatedOrder {
+  id: string
+  order_number: string
+  subtotal: number
+  fees: number
+  total: number
+  currency: string
+  status: string
+  expires_at: string
 }
 
-/**
- * Création de commande (statut `pending`) depuis la page événement. Le
- * paiement en ligne n'est pas encore branché (cf. cahier des charges,
- * étape ultérieure) : on enregistre la commande + ses lignes, ce qui
- * suffit pour que l'organisateur et l'acheteur la retrouvent ensuite.
- */
 export function useEventOrder() {
   const submitting = ref(false)
-  const error = ref<string | null>(null)
+  /** Code d'erreur (ex. « SOLD_OUT ») → traduit via `event.orderErrors.<code>` par la page. */
+  const errorCode = ref<string | null>(null)
+  const { csrfHeader } = useCsrf()
 
-  async function createOrder(eventId: string, userId: string, lines: CartLine[]) {
+  async function createOrder(eventId: string, lines: CartLine[]): Promise<CreatedOrder | null> {
     submitting.value = true
-    error.value = null
+    errorCode.value = null
     try {
       const supabase = useSupabase()
-      const subtotal = lines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0)
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (!session?.access_token) {
+        errorCode.value = 'SESSION_EXPIRED'
+        return null
+      }
 
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: userId,
-          event_id: eventId,
-          order_number: generateOrderNumber(),
-          subtotal,
-          fees: 0,
-          total: subtotal,
-          currency: 'XOF',
-          status: 'pending',
-        })
-        .select('*')
-        .single()
-
-      if (orderError) throw orderError
-
-      const items = lines.map((l) => ({
-        order_id: order.id,
-        ticket_type_id: l.ticketTypeId,
-        quantity: l.quantity,
-        unit_price: l.unitPrice,
-        total: l.unitPrice * l.quantity,
-      }))
-
-      const { error: itemsError } = await supabase.from('order_items').insert(items)
-      if (itemsError) throw itemsError
-
-      return order
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Erreur lors de la création de la commande'
+      const res = await $fetch<{ order: CreatedOrder }>('/api/orders', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          ...(await csrfHeader()),
+        },
+        body: {
+          eventId,
+          items: lines.map((l) => ({ ticketTypeId: l.ticketTypeId, quantity: l.quantity })),
+        },
+      })
+      return res.order
+    } catch (e: any) {
+      const status = e?.statusCode ?? e?.status ?? e?.response?.status
+      errorCode.value = e?.data?.data?.code ?? (status === 429 ? 'RATE_LIMITED' : status === 401 ? 'SESSION_EXPIRED' : 'ORDER_FAILED')
       return null
     } finally {
       submitting.value = false
     }
   }
 
-  return { submitting, error, createOrder }
+  return { submitting, errorCode, createOrder }
 }

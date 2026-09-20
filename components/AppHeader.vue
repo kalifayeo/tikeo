@@ -71,6 +71,14 @@ async function toggleMobileSearch() {
   }
 }
 
+// Pied de page masqué sur mobile : les liens légaux et la gestion des cookies
+// sont donc accessibles depuis ce menu.
+const { openPreferences } = useCookieConsent()
+function openCookiePreferences() {
+  menuOpen.value = false
+  openPreferences()
+}
+
 async function handleLogout() {
   menuOpen.value = false
   await signOut()
@@ -159,7 +167,7 @@ onUnmounted(() => {
     <!-- Ligne principale -->
     <div class="mx-auto flex max-w-tikeo-container items-center gap-4 px-4 py-2.5 md:px-6 md:py-3">
       <NuxtLink to="/" class="flex shrink-0 items-center">
-        <img src="/logo-tikeo.png" alt="Tikeo" class="h-11 w-auto md:h-14" />
+        <img src="/logo-tikeo.png" alt="Tikeo" width="174" height="56" fetchpriority="high" class="h-11 w-auto md:h-14" />
       </NuxtLink>
 
       <!-- Barre de recherche : visible en permanence sur desktop -->
@@ -204,7 +212,7 @@ onUnmounted(() => {
                 class="flex w-full items-center gap-3 px-3.5 py-2.5 text-left hover:bg-tikeo-gray-light"
                 @click="goToSuggestion(s.slug)"
               >
-                <img :src="s.coverImage" :alt="s.title" class="h-10 w-10 shrink-0 object-cover" />
+                <img :src="s.coverImage" :alt="s.title" width="40" height="40" loading="lazy" decoding="async" class="h-10 w-10 shrink-0 object-cover" />
                 <span class="min-w-0 flex-1">
                   <span class="block truncate text-sm font-medium text-tikeo-black">{{ s.title }}</span>
                   <span class="block truncate text-xs text-tikeo-gray-text">{{ suggestionDate(s.startDate) }} · {{ s.city }}<span v-if="s.organizerName"> · {{ s.organizerName }}</span></span>
@@ -493,6 +501,18 @@ onUnmounted(() => {
             <span class="mobile-menu-chevron" />
           </NuxtLink>
 
+          <!-- Légal : le footer n'existe pas sur mobile -->
+          <div class="mx-4 my-2 border-t border-tikeo-border" />
+          <NuxtLink to="/conditions" class="mobile-menu-row !py-2.5 !text-sm text-tikeo-gray-text" @click="menuOpen = false">
+            <span class="flex-1">{{ t('seo.pages.terms') }}</span>
+          </NuxtLink>
+          <NuxtLink to="/confidentialite" class="mobile-menu-row !py-2.5 !text-sm text-tikeo-gray-text" @click="menuOpen = false">
+            <span class="flex-1">{{ t('seo.pages.privacy') }}</span>
+          </NuxtLink>
+          <button type="button" class="mobile-menu-row w-full !py-2.5 text-left !text-sm text-tikeo-gray-text" @click="openCookiePreferences">
+            <span class="flex-1">{{ t('cookies.manage') }}</span>
+          </button>
+
           <template v-if="isAuthenticated">
             <div class="mx-4 my-3 border-t border-tikeo-border" />
             <button type="button" class="mobile-menu-row w-full text-left text-tikeo-error" @click="handleLogout">
@@ -552,7 +572,7 @@ onUnmounted(() => {
                 class="flex w-full items-center gap-3 px-3.5 py-2.5 text-left hover:bg-tikeo-gray-light"
                 @click="goToSuggestion(s.slug)"
               >
-                <img :src="s.coverImage" :alt="s.title" class="h-10 w-10 shrink-0 object-cover" />
+                <img :src="s.coverImage" :alt="s.title" width="40" height="40" loading="lazy" decoding="async" class="h-10 w-10 shrink-0 object-cover" />
                 <span class="min-w-0 flex-1">
                   <span class="block truncate text-sm font-medium text-tikeo-black">{{ s.title }}</span>
                   <span class="block truncate text-xs text-tikeo-gray-text">{{ suggestionDate(s.startDate) }} · {{ s.city }}</span>

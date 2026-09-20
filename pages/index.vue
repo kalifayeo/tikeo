@@ -7,10 +7,14 @@ const { filters, matchesDateRange, resetFilters, activeFilterCount, setCategory 
 const { categories: categoryList } = useCategoriesList()
 const sortOptions = useHomeDateRangeOptions()
 
+const homeTitle = 'Tikeo - La billetterie simple et intelligente pour vos événements'
+const homeDescription =
+  "Découvrez, achetez et gérez vos billets d'événements en Côte d'Ivoire : concerts, festivals, conférences et bien plus."
 useSeoMeta({
-  title: 'Tikeo - La billetterie simple et intelligente pour vos événements',
-  description:
-    "Découvrez, achetez et gérez vos billets d'événements en Côte d'Ivoire : concerts, festivals, conférences et bien plus.",
+  title: homeTitle,
+  description: homeDescription,
+  ogTitle: homeTitle,
+  ogDescription: homeDescription,
 })
 
 // Filtrage 100% client (le volume d'événements reste modeste, cf useEventsList

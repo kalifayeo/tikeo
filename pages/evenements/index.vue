@@ -27,6 +27,8 @@ const hasResults = computed(() => filteredEvents.value.length > 0)
 useSeoMeta({
   title: () => `${pageTitle.value} — Tikeo`,
   description: "Tous les événements publiés sur Tikeo, filtrables par catégorie, ville, date et prix.",
+  ogTitle: () => `${pageTitle.value} — Tikeo`,
+  ogDescription: "Tous les événements publiés sur Tikeo, filtrables par catégorie, ville, date et prix.",
 })
 </script>
 

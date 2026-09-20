@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const year = new Date().getFullYear()
+const { openPreferences } = useCookieConsent()
 
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -49,6 +50,7 @@ function scrollTop() {
         <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-tikeo-gray-text">
           <NuxtLink to="/confidentialite" class="hover:text-tikeo-orange">{{ t('footer.privacy') }}</NuxtLink>
           <NuxtLink to="/conditions" class="hover:text-tikeo-orange">{{ t('footer.terms') }}</NuxtLink>
+          <button type="button" class="hover:text-tikeo-orange" @click="openPreferences">{{ t('footer.cookies') }}</button>
           <span>© {{ year }} Tikeo</span>
         </div>
 

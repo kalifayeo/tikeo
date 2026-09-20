@@ -94,7 +94,9 @@ const HERO_HEIGHT_CLASSES = 'h-52 sm:h-64 md:h-80 lg:h-[26rem]'
             :alt="i === 0 ? t('hero.title') : ''"
             class="h-full shrink-0 object-cover"
             :style="{ width: trackBasis(centerLoop) }"
-            loading="lazy"
+            :loading="i === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="i === 0 ? 'high' : 'auto'"
+            decoding="async"
           />
         </div>
         <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />

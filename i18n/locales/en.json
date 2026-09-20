@@ -109,7 +109,13 @@
     "newPasswordPlaceholder": "New password (min. 8 characters)",
     "resetting": "Updating...",
     "resetError": "Unable to reset the password.",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "termsConsentPrefix": "I accept the",
+    "termsConsentTerms": "terms of use",
+    "termsConsentAnd": "and the",
+    "termsConsentPrivacy": "privacy policy",
+    "mustAcceptTerms": "You must accept the terms of use to create an account.",
+    "captchaRequired": "Please complete the anti-robot check before continuing."
   },
   "topbar": {
     "contact": "Help & Contact"
@@ -133,7 +139,8 @@
     "legal": "Legal notice",
     "privacy": "Privacy policy",
     "terms": "Terms of sale",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "cookies": "Manage cookies"
   },
   "search": {
     "searching": "Searching…",
@@ -187,7 +194,20 @@
     "seatingPlan": "View seating plan",
     "seatingPlanExternal": "This seating plan is an external document.",
     "seatingPlanOpen": "Open document",
-    "close": "Close"
+    "close": "Close",
+    "orderErrors": {
+      "SOLD_OUT": "There are not enough tickets left in this category.",
+      "TICKET_NOT_AVAILABLE": "This ticket type is no longer available.",
+      "SALE_NOT_OPEN": "Sales for this ticket haven't started yet.",
+      "SALE_CLOSED": "Sales for this ticket have ended.",
+      "EVENT_NOT_AVAILABLE": "This event is no longer on sale.",
+      "INVALID_QUANTITY": "Invalid quantity (maximum 10 tickets per type).",
+      "EMPTY_ORDER": "Select at least one ticket.",
+      "TOO_MANY_PENDING": "You already have several pending orders. Complete them or wait a few minutes.",
+      "ACCOUNT_SUSPENDED": "Your account is suspended. Please contact support.",
+      "SESSION_EXPIRED": "Your session has expired. Please log in again.",
+      "RATE_LIMITED": "Too many attempts. Please try again in a few minutes."
+    }
   },
   "common": {
     "comingSoon": "This section is part of the Tikeo roadmap and will be built in a later step.",
@@ -875,9 +895,9 @@
     "s4Title": "4. Data retention",
     "s4Text": "Your data is kept for as long as necessary to manage your account and orders, then archived or deleted in accordance with applicable legal obligations.",
     "s5Title": "5. Your rights",
-    "s5Text": "You have the right to access, correct and delete your personal data. You can exercise these rights at any time from your \"Settings\" space or by contacting us.",
+    "s5Text": "In accordance with Ivorian law no. 2013-450 of 19 June 2013 on the protection of personal data, you have the right to access, correct and delete your data. You can exercise these rights at any time from your \"Settings\" area or by contacting us, and you may refer a dispute to the ARTCI (Côte d'Ivoire telecommunications/ICT regulatory authority).",
     "s6Title": "6. Cookies",
-    "s6Text": "Tikeo uses cookies necessary for the site to work (login, language preferences) and, with your consent, audience measurement cookies.",
+    "s6Text": "Tikeo uses cookies that are necessary for the site to work (login, language preferences) and, with your consent, anonymous audience measurement. You can change your choice at any time via \"Manage cookies\".",
     "s7Title": "7. Security",
     "s7Text": "Payments and ticket verifications are processed server-side, never in the browser, to guarantee the security of your data and transactions.",
     "s8Title": "8. Contact",
@@ -995,5 +1015,74 @@
     "reply": "Reply by email",
     "archive": "Archive",
     "unarchive": "Unarchive"
+  },
+  "cookies": {
+    "title": "Cookies and privacy",
+    "text": "Tikeo uses cookies that are necessary for the site to work. With your consent, we also use anonymous audience measurement to improve the platform.",
+    "accept": "Accept",
+    "refuse": "Decline",
+    "learnMore": "Learn more",
+    "manage": "Manage cookies"
+  },
+  "notFoundPage": {
+    "code404": "404",
+    "title404": "Page not found",
+    "text404": "The page you're looking for doesn't exist or has been moved.",
+    "titleError": "Something went wrong",
+    "textError": "A problem occurred on our side. Please try again in a moment.",
+    "home": "Back to home",
+    "events": "Browse events"
+  },
+  "seo": {
+    "defaultTitle": "Tikeo - Simple and smart ticketing for your events",
+    "defaultDescription": "Tikeo is the online ticketing platform to discover, buy and manage your event tickets in Côte d'Ivoire and across Africa.",
+    "pages": {
+      "login": "Log in",
+      "register": "Sign up",
+      "forgotPassword": "Forgot password",
+      "terms": "Terms of use",
+      "privacy": "Privacy policy",
+      "contact": "Contact us",
+      "faq": "Frequently asked questions",
+      "about": "About us",
+      "pricing": "Organizer pricing",
+      "organizerLanding": "Become an organizer",
+      "account": "My account",
+      "myTickets": "My tickets",
+      "myOrders": "My orders",
+      "favorites": "My favorites",
+      "notifications": "Notifications",
+      "profile": "My profile",
+      "settings": "Settings",
+      "wallet": "My wallet",
+      "organizerDashboard": "Organizer dashboard",
+      "organizerEvents": "My events",
+      "organizerNew": "Create an event",
+      "organizerEdit": "Edit event",
+      "organizerScanner": "Entry scanner",
+      "organizerSettings": "Organizer settings",
+      "organizerRevenue": "Revenue",
+      "admin": "Administration",
+      "adminUsers": "Users",
+      "adminOrganizers": "Organizers",
+      "adminEvents": "Events",
+      "adminRequests": "Change requests",
+      "adminTickets": "Tickets",
+      "adminOrders": "Orders",
+      "adminPayments": "Payments",
+      "adminCategories": "Categories",
+      "adminHome": "Home banner",
+      "adminMessages": "Contact messages"
+    },
+    "desc": {
+      "login": "Log in to your Tikeo account to find your tickets and orders.",
+      "register": "Create your free Tikeo account to buy tickets or organize your events.",
+      "terms": "Terms of use of the Tikeo ticketing platform.",
+      "privacy": "How Tikeo collects, uses and protects your personal data.",
+      "contact": "Have a question? Contact the Tikeo team, we reply quickly.",
+      "faq": "Answers to frequently asked questions about tickets, payments and events on Tikeo.",
+      "about": "Discover Tikeo, the modern ticketing platform built for Côte d'Ivoire and Africa.",
+      "pricing": "Discover Tikeo plans to sell your tickets online and control entry."
+    }
   }
 }

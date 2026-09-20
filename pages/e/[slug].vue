@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CartLine } from '~/composables/useEventDetail'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const slug = route.params.slug as string
@@ -9,7 +9,7 @@ const slug = route.params.slug as string
 const { event, loading, notFound, error, refresh } = useEventDetail(slug)
 const { isAuthenticated, user } = useAuth()
 const { isFavorite, toggleFavorite } = useFavorites()
-const { submitting, createOrder } = useEventOrder()
+const { submitting, errorCode, createOrder } = useEventOrder()
 
 // --- Onglets "Tickets" / "Détails" (façon Tikerama) ---
 const activeTab = ref<'tickets' | 'details'>('tickets')
@@ -105,7 +105,12 @@ async function handleFavoriteClick() {
 // personnalisé de l'événement — himra.tikeo.com, ou l'URL de secours
 // tikeo.com/e/himra tant qu'aucun domaine perso n'est branché, §16). ---
 const { buildEventUrl } = useEventPublicUrl()
+// Lien partagé : le raccourci himra.tikeo.com (ou /e/himra en secours, cf. §16).
 const canonicalEventUrl = computed(() => (event.value ? buildEventUrl({ slug: event.value.slug }).url : ''))
+// Lien indexé par Google : UNE seule URL par événement (évite le contenu
+// dupliqué entre himra.tikeo.com et tikeo.com/e/himra).
+const siteOrigin = useSiteOrigin()
+const indexedEventUrl = computed(() => (event.value ? `${siteOrigin}/e/${encodeURIComponent(event.value.slug)}` : ''))
 
 const shareCopied = ref(false)
 async function handleShare() {
@@ -146,25 +151,99 @@ async function handleReserve() {
   }
   if (!event.value || cartLines.value.length === 0) return
 
-  const order = await createOrder(event.value.id, user.value.id, cartLines.value)
+  // Seuls l'événement et les quantités partent au serveur : les prix, le stock
+  // et le statut sont revalidés en base (voir server/api/orders.post.ts).
+  const order = await createOrder(event.value.id, cartLines.value)
   if (order) {
     orderResult.value = { orderNumber: order.order_number, total: order.total }
     quantities.value = Object.fromEntries(event.value.ticketTypes.map((tt) => [tt.id, 0]))
-  } else {
-    orderError.value = t('event.orderError')
+    refresh() // met à jour les quantités restantes affichées
+    return
+  }
+
+  const code = errorCode.value ?? 'ORDER_FAILED'
+  orderError.value = te(`event.orderErrors.${code}`) ? t(`event.orderErrors.${code}`) : t('event.orderError')
+  // Stock, fenêtre de vente ou statut changés depuis l'ouverture de la page : on rafraîchit.
+  if (['SOLD_OUT', 'TICKET_NOT_AVAILABLE', 'SALE_NOT_OPEN', 'SALE_CLOSED', 'EVENT_NOT_AVAILABLE'].includes(code)) {
+    refresh()
   }
 }
 
+// --- SEO & aperçus de partage (cahier des charges §36) ---------------------
+// Ces balises sont présentes dans le HTML servi (rendu serveur) : c'est ce que
+// lisent WhatsApp, Facebook, X et Google quand himra.tikeo.com est partagé.
+const seoDescription = computed(() => {
+  const d = event.value?.description?.replace(/\s+/g, ' ').trim()
+  return d ? d.slice(0, 160) : "Découvrez et achetez vos billets sur Tikeo."
+})
+const seoImage = computed(() => toAbsoluteUrl(event.value?.coverImage, siteOrigin))
+
 useSeoMeta({
   title: () => (event.value ? `${event.value.title} — Tikeo` : 'Événement — Tikeo'),
-  description: () => event.value?.description?.slice(0, 160) || "Découvrez et achetez vos billets sur Tikeo.",
+  description: () => seoDescription.value,
   ogTitle: () => event.value?.title,
-  ogImage: () => event.value?.coverImage,
-  ogDescription: () => event.value?.description?.slice(0, 160),
-  ogUrl: () => canonicalEventUrl.value || undefined,
+  ogDescription: () => seoDescription.value,
+  ogImage: () => seoImage.value,
+  ogImageAlt: () => event.value?.title,
+  ogUrl: () => indexedEventUrl.value || undefined,
+  ogType: 'website',
+  twitterTitle: () => event.value?.title,
+  twitterDescription: () => seoDescription.value,
+  twitterImage: () => seoImage.value,
+  robots: () => (notFound.value ? 'noindex, nofollow' : 'index, follow'),
 })
+
+// Données structurées schema.org/Event (résultats enrichis Google).
+const structuredData = computed(() => {
+  const e = event.value
+  if (!e) return null
+  const prices = e.ticketTypes.map((tt) => tt.price)
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: e.title,
+    description: seoDescription.value,
+    startDate: e.startDate,
+    ...(e.endDate ? { endDate: e.endDate } : {}),
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    image: seoImage.value ? [seoImage.value] : undefined,
+    url: indexedEventUrl.value,
+    location: {
+      '@type': 'Place',
+      name: e.locationName || e.city,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: e.address || undefined,
+        addressLocality: e.city || undefined,
+        addressCountry: e.country || undefined,
+      },
+    },
+    ...(e.organizerName ? { organizer: { '@type': 'Organization', name: e.organizerName } } : {}),
+    ...(prices.length
+      ? {
+          offers: e.ticketTypes.map((tt) => ({
+            '@type': 'Offer',
+            name: tt.name,
+            price: tt.price,
+            priceCurrency: 'XOF',
+            availability: tt.soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+            url: indexedEventUrl.value,
+          })),
+        }
+      : {}),
+  }
+})
+
 useHead({
-  link: [{ rel: 'canonical', href: () => canonicalEventUrl.value || undefined }],
+  link: [{ rel: 'canonical', href: () => indexedEventUrl.value || undefined }],
+  script: [
+    {
+      type: 'application/ld+json',
+      // Le caractère « < » est échappé : une description ne peut pas refermer la balise script.
+      innerHTML: () => (structuredData.value ? JSON.stringify(structuredData.value).replace(/</g, '\\u003c') : undefined),
+    },
+  ],
 })
 </script>
 
@@ -199,7 +278,7 @@ useHead({
         <div class="flex flex-col gap-5 md:flex-row md:items-stretch md:gap-8">
           <!-- Image -->
           <div class="relative shrink-0 overflow-hidden bg-tikeo-surface-alt md:w-[38%] lg:w-[34%]">
-            <img :src="event.coverImage" :alt="event.title" class="aspect-[4/3] w-full object-cover md:aspect-auto md:h-full md:min-h-[260px]" />
+            <img :src="event.coverImage" :alt="event.title" fetchpriority="high" decoding="async" class="aspect-[4/3] w-full object-cover md:aspect-auto md:h-full md:min-h-[260px]" />
 
             <NuxtLink to="/" class="absolute left-3 top-3 flex h-9 w-9 items-center justify-center bg-black/40 text-white backdrop-blur hover:bg-black/60" :aria-label="t('event.backHome')">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
@@ -243,7 +322,7 @@ useHead({
               <span v-if="!event.organizerLogo" class="flex h-9 w-9 shrink-0 items-center justify-center bg-tikeo-brand text-xs font-bold text-white">
                 {{ event.organizerName.slice(0, 2).toUpperCase() }}
               </span>
-              <img v-else :src="event.organizerLogo" :alt="event.organizerName" class="h-9 w-9 shrink-0 object-cover" />
+              <img v-else :src="event.organizerLogo" :alt="event.organizerName" loading="lazy" decoding="async" class="h-9 w-9 shrink-0 object-cover" />
               <div class="flex items-center gap-1.5">
                 <p class="text-sm font-semibold uppercase text-tikeo-orange">{{ event.organizerName }}</p>
                 <svg v-if="event.verified" class="h-4 w-4 shrink-0 text-tikeo-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" :aria-label="t('home.verified')">
@@ -366,7 +445,7 @@ useHead({
                 <span v-if="!event.organizerLogo" class="flex h-11 w-11 shrink-0 items-center justify-center bg-tikeo-brand text-sm font-bold text-white">
                   {{ event.organizerName.slice(0, 2).toUpperCase() }}
                 </span>
-                <img v-else :src="event.organizerLogo" :alt="event.organizerName" class="h-11 w-11 shrink-0 object-cover" />
+                <img v-else :src="event.organizerLogo" :alt="event.organizerName" loading="lazy" decoding="async" class="h-11 w-11 shrink-0 object-cover" />
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-1.5">
                     <p class="truncate text-sm font-semibold text-tikeo-black">{{ event.organizerName }}</p>
@@ -460,7 +539,7 @@ useHead({
               </button>
             </div>
             <div class="p-4">
-              <img v-if="seatingPlanIsImage" :src="event.seatingPlanUrl!" :alt="t('event.seatingPlan')" class="w-full object-contain" />
+              <img v-if="seatingPlanIsImage" :src="event.seatingPlanUrl!" :alt="t('event.seatingPlan')" loading="lazy" decoding="async" class="w-full object-contain" />
               <div v-else class="flex flex-col items-center gap-3 py-8 text-center">
                 <p class="text-sm text-tikeo-gray-text">{{ t('event.seatingPlanExternal') }}</p>
                 <a :href="event.seatingPlanUrl!" target="_blank" rel="noopener" class="btn-primary">{{ t('event.seatingPlanOpen') }}</a>

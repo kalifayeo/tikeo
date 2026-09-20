@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import type { H3Event } from 'h3'
+import { requireUser } from './userAuth'
 
 /**
  * Vérifie que la requête porte bien le jeton d'accès Supabase d'un
@@ -12,37 +12,19 @@ import type { H3Event } from 'h3'
  * valeur fournie par le client (cf. cahier des charges §64).
  */
 export async function requireAdmin(event: H3Event) {
-  const authHeader = getHeader(event, 'authorization')
-  const token = authHeader?.replace(/^Bearer\s+/i, '')
-
-  if (!token) {
-    throw createError({ statusCode: 401, statusMessage: 'Authentification requise.' })
-  }
-
-  const config = useRuntimeConfig()
-  const anonClient = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  })
-
-  const {
-    data: { user },
-    error: userError,
-  } = await anonClient.auth.getUser(token)
-
-  if (userError || !user) {
-    throw createError({ statusCode: 401, statusMessage: 'Session invalide.' })
-  }
+  // Identité vérifiée par Supabase Auth (voir server/utils/userAuth.ts).
+  const { userId } = await requireUser(event)
 
   const supabaseAdmin = useSupabaseAdmin()
   const { data: profile, error: profileError } = await supabaseAdmin
     .from('profiles')
     .select('role, full_name, user_id')
-    .eq('user_id', user.id)
+    .eq('user_id', userId)
     .maybeSingle()
 
   if (profileError || !profile || profile.role !== 'admin') {
     throw createError({ statusCode: 403, statusMessage: 'Accès réservé aux administrateurs.' })
   }
 
-  return { adminUserId: user.id, adminProfile: profile }
+  return { adminUserId: userId, adminProfile: profile }
 }

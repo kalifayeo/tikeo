@@ -24,8 +24,8 @@ lien qui est proposé automatiquement :
 - dans la liste « Mes événements » de l'organisateur (bouton
   « Copier le lien ») ;
 - sur la page publique de l'événement (boutons de partage) ;
-- dans les métadonnées SEO (`og:url`, lien canonique) pour un bon rendu
-  quand le lien est partagé.
+- dans les métadonnées SEO (`og:url`, lien canonique, JSON-LD) pour un bon rendu
+  quand le lien est partagé (voir « SEO et indexation » en bas de ce document).
 
 Toute cette logique est centralisée dans
 `composables/useEventPublicUrl.ts`.
@@ -107,3 +107,21 @@ puis ouvrez `http://himra.localhost:3000` dans le navigateur.
 comme des slugs d'événement (voir `RESERVED_SUBDOMAINS` dans
 `server/middleware/subdomain.ts`) — ils continueront de servir
 l'application normale, conformément au §51 du cahier des charges.
+
+## SEO et indexation (robots.txt, sitemap.xml, lien canonique)
+
+- **`/robots.txt` et `/sitemap.xml` sont générés dynamiquement**
+  (`server/routes/`). Le sitemap liste les pages publiques et tous les
+  événements publiés, sous la forme `https://tikeo.com/e/<slug>`.
+- **Une seule URL indexée par événement** : `himra.tikeo.com` et
+  `tikeo.com/e/himra` affichent la même page, mais la balise `canonical` pointe
+  toujours vers `https://tikeo.com/e/himra` (évite le contenu dupliqué). Les
+  liens `himra.tikeo.com` restent les liens de **partage** (WhatsApp, etc.) et
+  affichent bien leur titre et leur image (balises `og:` présentes dans le HTML
+  serveur).
+- **Indexation** : autorisée uniquement sur le domaine racine (`tikeo.com` et
+  ses sous-domaines). Les previews Vercel et `localhost` sont en `Disallow: /`.
+  Tant que le site tourne uniquement sur `tikeo.vercel.app`, ajoutez la variable
+  d'environnement `ALLOW_INDEXING=true` pour autoriser Google à l'indexer.
+- Après mise en ligne : déclarez `https://tikeo.com/sitemap.xml` dans Google
+  Search Console.

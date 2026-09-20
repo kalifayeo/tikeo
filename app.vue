@@ -23,10 +23,16 @@ const { theme } = useTheme()
 useHead(() => ({
   htmlAttrs: { class: theme.value === 'dark' ? 'dark' : '' },
 }))
+
+// SEO par défaut (titre, description, Open Graph, canonical, noindex des
+// zones privées) déduit de la route — voir composables/useRouteSeo.ts.
+useRouteSeo()
 </script>
 
 <template>
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <!-- Consentement cookies : au niveau racine pour être présent sur toutes les zones -->
+  <CookieBanner />
 </template>

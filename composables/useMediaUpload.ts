@@ -20,11 +20,58 @@ export const ACCEPTED_IMAGE_TYPES = [
   'image/gif',
   'image/webp',
   'image/avif',
-  'image/svg+xml',
+  // SVG volontairement refusé : un SVG peut embarquer du JavaScript (bucket public).
 ]
 export const ACCEPTED_DOCUMENT_TYPES = ['application/pdf']
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 Mo, comme le bucket
+
+// Taille maximale (px, plus grand côté) et qualité WebP par dossier. Une
+// affiche de téléphone de 4 000 px et 6 Mo devient ~1 600 px et ~150 Ko :
+// les pages se chargent bien plus vite sur les connexions mobiles
+// (cahier des charges §56 : « compression des images »).
+const OPTIMIZATION: Record<MediaFolder, { maxSide: number; quality: number }> = {
+  'event-covers': { maxSide: 1600, quality: 0.82 },
+  'seating-plans': { maxSide: 2400, quality: 0.9 }, // plan de salle : texte fin à préserver
+  'organizer-logos': { maxSide: 512, quality: 0.85 },
+  'home-slides': { maxSide: 2000, quality: 0.82 },
+  avatars: { maxSide: 512, quality: 0.85 },
+}
+// GIF (animés), AVIF (déjà compressé) et PDF sont envoyés tels quels.
+const OPTIMIZABLE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
+/**
+ * Redimensionne et convertit en WebP côté navigateur avant l'envoi. En cas
+ * de problème (navigateur ancien, image illisible) ou si le résultat n'est
+ * pas plus léger, on garde le fichier d'origine : l'optimisation ne doit
+ * jamais empêcher un envoi.
+ */
+async function optimizeImage(file: File, folder: MediaFolder): Promise<File> {
+  if (!import.meta.client || !OPTIMIZABLE_TYPES.includes(file.type) || typeof createImageBitmap !== 'function') return file
+  try {
+    const { maxSide, quality } = OPTIMIZATION[folder]
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
+    const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height))
+    const width = Math.max(1, Math.round(bitmap.width * scale))
+    const height = Math.max(1, Math.round(bitmap.height * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return file
+    ctx.drawImage(bitmap, 0, 0, width, height)
+    bitmap.close?.()
+
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', quality))
+    if (!blob || blob.type !== 'image/webp') return file
+    if (scale === 1 && blob.size >= file.size) return file
+
+    return new File([blob], `${file.name.replace(/\.[^.]+$/, '')}.webp`, { type: 'image/webp' })
+  } catch {
+    return file
+  }
+}
 
 /**
  * Nom de fichier sûr et unique : on repart de l'extension d'origine (pour
@@ -70,11 +117,13 @@ export function useMediaUpload() {
     error.value = null
     try {
       const supabase = useSupabase()
-      const objectName = buildObjectName(folder, file)
-      const { error: uploadError } = await supabase.storage.from(MEDIA_BUCKET).upload(objectName, file, {
-        cacheControl: '3600',
+      const prepared = await optimizeImage(file, folder)
+      const objectName = buildObjectName(folder, prepared)
+      const { error: uploadError } = await supabase.storage.from(MEDIA_BUCKET).upload(objectName, prepared, {
+        // Nom unique par envoi : le fichier ne change jamais → cache long autorisé.
+        cacheControl: '31536000',
         upsert: false,
-        contentType: file.type,
+        contentType: prepared.type,
       })
       if (uploadError) throw uploadError
 

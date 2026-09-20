@@ -12,21 +12,39 @@ type OtpPurpose = 'signup' | 'login' | 'reset_password'
  * Pour que les emails contiennent un code à 6 chiffres (au lieu d'un simple
  * lien), pensez à activer/adapter les templates dans Authentication > Email
  * Templates en y incluant la variable {{ .Token }}.
+ *
+ * Anti-robots : si NUXT_PUBLIC_TURNSTILE_SITE_KEY est renseignée, les écrans
+ * d'inscription / connexion / mot de passe oublié obtiennent un jeton
+ * Cloudflare Turnstile (composables/useCaptcha.ts) transmis ici en
+ * `captchaToken` ; Supabase le vérifie si « CAPTCHA protection » est activée
+ * dans Authentication > Attack Protection.
  */
 export function useAuth() {
   const store = useAuthStore()
   const { user, profile, loading, isAuthenticated, role } = storeToRefs(store)
 
-  async function register(payload: { fullName: string; email: string; phone?: string; password?: string }) {
+  async function register(payload: {
+    fullName: string
+    email: string
+    phone?: string
+    password?: string
+    captchaToken?: string
+  }) {
     const supabase = useSupabase()
     const email = payload.email.trim().toLowerCase()
-    const metadata = { full_name: payload.fullName.trim(), phone: payload.phone || null }
+    // terms_accepted_at : preuve horodatée de l'acceptation des CGU / de la
+    // politique de confidentialité, conservée dans les métadonnées du compte.
+    const metadata = {
+      full_name: payload.fullName.trim(),
+      phone: payload.phone || null,
+      terms_accepted_at: new Date().toISOString(),
+    }
 
     if (payload.password) {
       const { error } = await supabase.auth.signUp({
         email,
         password: payload.password,
-        options: { data: metadata },
+        options: { data: metadata, captchaToken: payload.captchaToken },
       })
       if (error) throw error
     } else {
@@ -34,7 +52,7 @@ export function useAuth() {
       // directement un code de connexion par email (OTP).
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { shouldCreateUser: true, data: metadata },
+        options: { shouldCreateUser: true, data: metadata, captchaToken: payload.captchaToken },
       })
       if (error) throw error
     }
@@ -42,11 +60,12 @@ export function useAuth() {
     return { success: true }
   }
 
-  async function loginWithPassword(email: string, password: string) {
+  async function loginWithPassword(email: string, password: string, captchaToken?: string) {
     const supabase = useSupabase()
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
       password,
+      options: { captchaToken },
     })
     if (error) throw error
     store.setUser(data.user)
@@ -54,12 +73,12 @@ export function useAuth() {
     return data
   }
 
-  async function requestOtp(email: string, purpose: OtpPurpose) {
+  async function requestOtp(email: string, purpose: OtpPurpose, captchaToken?: string) {
     const supabase = useSupabase()
     const cleanEmail = email.trim().toLowerCase()
 
     if (purpose === 'reset_password') {
-      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail)
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, { captchaToken })
       if (error) throw error
       return { success: true }
     }
@@ -67,7 +86,7 @@ export function useAuth() {
     // purpose === 'login' : on ne crée jamais de compte depuis l'écran de connexion.
     const { error } = await supabase.auth.signInWithOtp({
       email: cleanEmail,
-      options: { shouldCreateUser: false },
+      options: { shouldCreateUser: false, captchaToken },
     })
     if (error) throw error
     return { success: true }

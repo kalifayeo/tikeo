@@ -13,6 +13,9 @@ const sortBy = ref<EventSortBy>('relevance')
 useSeoMeta({
   title: () => (queryText.value ? `Recherche : ${queryText.value} — Tikeo` : 'Recherche — Tikeo'),
   description: "Recherche d'événements, d'artistes, d'organisateurs, de villes et de catégories sur Tikeo.",
+  ogTitle: () => (queryText.value ? `Recherche : ${queryText.value} — Tikeo` : 'Recherche — Tikeo'),
+  // Les résultats de recherche interne n'ont pas vocation à être indexés (contenu quasi infini).
+  robots: 'noindex, follow',
 })
 
 async function runSearch() {

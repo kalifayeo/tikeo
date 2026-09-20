@@ -25,30 +25,44 @@ const loading = ref(false)
 const errorMessage = ref('')
 const infoMessage = ref('')
 
+// Anti-robots Turnstile (inactif tant que NUXT_PUBLIC_TURNSTILE_SITE_KEY est vide).
+// Un seul widget pour toute la page : il sert aussi au renvoi du code.
+const { token: captchaToken, widget, ready: captchaReady, onVerify, onExpire, reset: resetCaptcha } = useCaptcha()
+
 async function submitPasswordLogin() {
   errorMessage.value = ''
+  if (!captchaReady.value) {
+    errorMessage.value = t('auth.captchaRequired')
+    return
+  }
   loading.value = true
   try {
-    await loginWithPassword(email.value, password.value)
+    await loginWithPassword(email.value, password.value, captchaToken.value)
     router.push(redirectTarget.value)
   } catch (e: any) {
     errorMessage.value = e?.message || e?.data?.statusMessage || t('auth.loginError')
   } finally {
     loading.value = false
+    resetCaptcha() // le jeton est à usage unique
   }
 }
 
 async function submitRequestOtp() {
   errorMessage.value = ''
+  if (!captchaReady.value) {
+    errorMessage.value = t('auth.captchaRequired')
+    return
+  }
   loading.value = true
   try {
-    await requestOtp(email.value, 'login')
+    await requestOtp(email.value, 'login', captchaToken.value)
     step.value = 'otp-sent'
     infoMessage.value = t('auth.otpSentInfo')
   } catch (e: any) {
     errorMessage.value = e?.message || e?.data?.statusMessage || t('auth.otpSendError')
   } finally {
     loading.value = false
+    resetCaptcha()
   }
 }
 
@@ -97,10 +111,33 @@ function switchMode(next: 'password' | 'otp') {
     <p v-if="errorMessage" class="mb-4 border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600 dark:bg-red-500/10 dark:text-red-400">{{ errorMessage }}</p>
     <p v-if="infoMessage" class="mb-4 border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-tikeo-blue dark:bg-blue-500/10">{{ infoMessage }}</p>
 
+    <!-- Anti-robots : présent sur toute la page (connexion et renvoi du code) -->
+    <TurnstileWidget ref="widget" class="mb-4" @verify="onVerify" @expire="onExpire" />
+
     <!-- Connexion par mot de passe -->
     <form v-if="mode === 'password'" class="flex flex-col gap-4" @submit.prevent="submitPasswordLogin">
-      <input v-model="email" type="email" required :placeholder="t('auth.emailPlaceholder')" class="input-field" />
-      <input v-model="password" type="password" required :placeholder="t('auth.passwordPlaceholder')" class="input-field" />
+      <input
+        v-model="email"
+        type="email"
+        name="email"
+        autocomplete="username"
+        required
+        maxlength="254"
+        :placeholder="t('auth.emailPlaceholder')"
+        :aria-label="t('auth.emailPlaceholder')"
+        class="input-field"
+      />
+      <input
+        v-model="password"
+        type="password"
+        name="password"
+        autocomplete="current-password"
+        required
+        maxlength="72"
+        :placeholder="t('auth.passwordPlaceholder')"
+        :aria-label="t('auth.passwordPlaceholder')"
+        class="input-field"
+      />
       <NuxtLink to="/mot-de-passe-oublie" class="self-end text-xs font-medium text-tikeo-blue">
         {{ t('auth.forgotPasswordLink') }}
       </NuxtLink>
@@ -111,7 +148,17 @@ function switchMode(next: 'password' | 'otp') {
 
     <!-- Connexion par code OTP -->
     <form v-else-if="step === 'form'" class="flex flex-col gap-4" @submit.prevent="submitRequestOtp">
-      <input v-model="email" type="email" required :placeholder="t('auth.emailPlaceholder')" class="input-field" />
+      <input
+        v-model="email"
+        type="email"
+        name="email"
+        autocomplete="email"
+        required
+        maxlength="254"
+        :placeholder="t('auth.emailPlaceholder')"
+        :aria-label="t('auth.emailPlaceholder')"
+        class="input-field"
+      />
       <button type="submit" class="btn-primary w-full" :disabled="loading">
         {{ loading ? t('auth.sendingCode') : t('auth.sendCode') }}
       </button>

@@ -13,17 +13,25 @@ const loading = ref(false)
 const errorMessage = ref('')
 const infoMessage = ref('')
 
+// Anti-robots Turnstile (inactif tant que NUXT_PUBLIC_TURNSTILE_SITE_KEY est vide).
+const { token: captchaToken, widget, ready: captchaReady, onVerify, onExpire, reset: resetCaptcha } = useCaptcha()
+
 async function submitRequest() {
   errorMessage.value = ''
+  if (!captchaReady.value) {
+    errorMessage.value = t('auth.captchaRequired')
+    return
+  }
   loading.value = true
   try {
-    await requestOtp(email.value, 'reset_password')
+    await requestOtp(email.value, 'reset_password', captchaToken.value)
     step.value = 'verify'
     infoMessage.value = t('auth.forgotOtpInfo')
   } catch (e: any) {
     errorMessage.value = e?.message || e?.data?.statusMessage || t('auth.otpSendError')
   } finally {
     loading.value = false
+    resetCaptcha()
   }
 }
 
@@ -62,7 +70,18 @@ async function submitReset() {
     <p v-if="infoMessage" class="mb-4 border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-tikeo-blue dark:bg-blue-500/10">{{ infoMessage }}</p>
 
     <form v-if="step === 'request'" class="flex flex-col gap-4" @submit.prevent="submitRequest">
-      <input v-model="email" type="email" required :placeholder="t('auth.emailPlaceholder')" class="input-field" />
+      <input
+        v-model="email"
+        type="email"
+        name="email"
+        autocomplete="email"
+        required
+        maxlength="254"
+        :placeholder="t('auth.emailPlaceholder')"
+        :aria-label="t('auth.emailPlaceholder')"
+        class="input-field"
+      />
+      <TurnstileWidget ref="widget" @verify="onVerify" @expire="onExpire" />
       <button type="submit" class="btn-primary w-full" :disabled="loading">
         {{ loading ? t('auth.sendingCode') : t('auth.sendCode') }}
       </button>
@@ -87,6 +106,10 @@ async function submitReset() {
       <input
         v-model="newPassword"
         type="password"
+        name="new-password"
+        autocomplete="new-password"
+        minlength="8"
+        maxlength="72"
         required
         :placeholder="t('auth.newPasswordPlaceholder')"
         class="input-field"
