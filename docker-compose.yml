@@ -1,0 +1,30 @@
+# =============================================================================
+#  Tikeo — orchestration locale
+#
+#  docker compose up            -> lance l'app en mode dev (hot-reload)
+#  docker compose up --build    -> reconstruit après un changement de package.json
+#  docker compose down          -> arrête et nettoie
+#  docker compose logs -f app   -> suit les logs
+# =============================================================================
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    # Le code local est monté dans le conteneur : vos modifications sont
+    # visibles immédiatement, sans rebuild.
+    volumes:
+      - .:/app
+      # ...sauf node_modules et .nuxt, qui restent CEUX du conteneur
+      # (sinon les binaires compilés pour votre OS écraseraient ceux d'Alpine).
+      - /app/node_modules
+      - /app/.nuxt
+    env_file:
+      - .env
+    environment:
+      # Indispensable sous Docker : sans ça, le watcher de fichiers ne voit
+      # pas les changements venant d'un volume monté.
+      CHOKIDAR_USEPOLLING: "true"
+    restart: unless-stopped
