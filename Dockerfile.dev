@@ -1,0 +1,11 @@
+# Image de DÉVELOPPEMENT : garde le hot-reload de Nuxt.
+# Le code n'est pas copié dans l'image, il est monté depuis votre disque
+# (voir docker-compose.yml) — vous éditez, le navigateur se recharge.
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+ENV NUXT_HOST=0.0.0.0 NUXT_PORT=3000
+EXPOSE 3000
+CMD ["npm", "run", "dev"]

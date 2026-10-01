@@ -1,0 +1,34 @@
+{
+  "name": "tikeo",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Tikeo - La billetterie simple et intelligente pour vos evenements",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "clean": "node -e \"for (const d of ['.nuxt','.output','node_modules/.vite','node_modules/.cache']) require('fs').rmSync(d,{recursive:true,force:true})\"",
+    "dev:clean": "npm run clean && nuxt dev"
+  },
+  "dependencies": {
+    "@nuxtjs/i18n": "^9.5.6",
+    "@pinia/nuxt": "^0.5.5",
+    "@supabase/supabase-js": "^2.45.4",
+    "jspdf": "^2.5.2",
+    "nuxt": "^3.13.2",
+    "pinia": "^2.2.4",
+    "qrcode": "^1.5.4",
+    "vue": "^3.5.10",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@types/qrcode": "^1.5.5",
+    "typescript": "^5.6.2",
+    "vue-tsc": "^2.1.6"
+  }
+}
