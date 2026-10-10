@@ -1,0 +1,13 @@
+VIDÉO DE PRÉSENTATION TIKEO
+===========================
+La vidéo se gère maintenant depuis /admin/accueil (champ « Vidéo de présentation » :
+lien YouTube, Vimeo ou .mp4). Ce dossier ne sert que de valeur de secours.
+
+Déposez ici votre vidéo sous le nom :  presentation.mp4   (format MP4 / H.264, idéalement < 50 Mo)
+Image d'aperçu facultative :          presentation-poster.jpg
+
+Autres options (sans mettre de fichier ici) : dans .env, renseignez
+NUXT_PUBLIC_PRESENTATION_VIDEO_URL avec :
+  - un lien YouTube  (https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX)
+  - un lien Vimeo    (https://vimeo.com/XXXX)
+  - ou l'URL directe d'un fichier .mp4 / .webm hébergé ailleurs (ex. Supabase Storage).

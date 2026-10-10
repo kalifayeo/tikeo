@@ -1,0 +1,43 @@
+{
+  "name": "tikeo",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Tikeo - La billetterie simple et intelligente pour vos evenements",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "clean": "node -e \"for (const d of ['.nuxt','.output','node_modules/.vite','node_modules/.cache']) require('fs').rmSync(d,{recursive:true,force:true})\"",
+    "dev:clean": "npm run clean && nuxt dev"
+  },
+  "dependencies": {
+    "@nuxtjs/i18n": "^9.5.6",
+    "@pinia/nuxt": "^0.5.5",
+    "@supabase/supabase-js": "^2.45.4",
+    "jspdf": "^2.5.2",
+    "jsqr": "^1.4.0",
+    "jszip": "^3.10.2",
+    "leaflet": "^1.9.4",
+    "node-forge": "^1.4.0",
+    "nuxt": "^3.13.2",
+    "pinia": "^2.2.4",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.33.5",
+    "vue": "^3.5.10",
+    "vue-router": "^4.4.5",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@types/leaflet": "^1.9.12",
+    "@types/node-forge": "^1.3.14",
+    "@types/qrcode": "^1.5.5",
+    "@types/web-push": "^3.6.4",
+    "typescript": "^5.6.2",
+    "vue-tsc": "^2.1.6"
+  }
+}
